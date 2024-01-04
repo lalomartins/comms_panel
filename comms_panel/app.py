@@ -8,7 +8,7 @@ from comms_panel.backends.mastodon.client import RootClient
 class App(wx.App):
     def __init__(self):
         super().__init__(False)
-        self.root_client = RootClient("https://peoplemaking.games")
+        self.root_client = RootClient()
         self.frame = wx.Frame(None, wx.ID_ANY, "Comms Panel")
         self.SetTopWindow(self.frame)
         self.frame.MinSize = wx.Size(800, 600)

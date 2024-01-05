@@ -19,9 +19,11 @@ class App(wx.App):
         self.frame.SetSizer(self.panel_sizer)
         self.frame.SetAutoLayout(1)
         self.panel_sizer.Fit(self.frame)
-        size = wx.Size(400, 600)
+        size = wx.Size(380, 600)
         self.panels = [
-            TimelinePanel(self.frame, factory(update_period=timedelta(minutes=2)))
+            TimelinePanel(
+                self.frame, factory(update_period=timedelta(minutes=2)), size=size
+            )
             for factory in [
                 self.user_client.home_timeline,
                 self.user_client.local_timeline,

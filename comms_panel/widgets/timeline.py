@@ -1,4 +1,6 @@
-from cProfile import label
+import asyncio
+from datetime import datetime
+from logging import debug
 import wx, wx.lib.scrolledpanel, wx.html
 
 from comms_panel.backends.timeline import Timeline
@@ -12,21 +14,19 @@ class TimelinePanel(wx.lib.scrolledpanel.ScrolledPanel):
         super().__init__(parent, **kw)
         self._default_width = self.Size.width
         self.timeline = timeline
-        self.title_pane = wx.StaticText(self, label=timeline.title)
         self.panel_sizer = wx.FlexGridSizer(1)
         self.SetSizer(self.panel_sizer)
         # self.SetAutoLayout(1)
         # self.panel_sizer.Fit(self)
         self.EnableScrolling(False, True)
-        self.panel_sizer.Add(self.title_pane)
+        self.panel_sizer.Add(wx.StaticText(self, label=timeline.title))
         self.SetupScrolling()
 
     def update(self):
-        size = wx.Size((self.Size.width or self._default_width) - 20, 30)
-        wx.SafeYield()
-        self.panel_sizer.Clear()
-        self.panel_sizer.Add(self.title_pane)
         self.timeline.update()
+        size = wx.Size((self.Size.width or self._default_width) - 20, 30)
+        self.panel_sizer.Clear(delete_windows=True)
+        self.panel_sizer.Add(wx.StaticText(self, label=self.timeline.title))
         for status in self.timeline.statuses:
             self.panel_sizer.AddSpacer(20)
             self.panel_sizer.Add(
@@ -44,6 +44,13 @@ class TimelinePanel(wx.lib.scrolledpanel.ScrolledPanel):
                     wx.StaticText(self, label=f"Reblog of {orig["created_at"]} by {orig["account"]["display_name"]}")
                 )
                 html.SetPage(cleanup_html(orig["content"]))
-            wx.SafeYield()
             html.SetMinSize(wx.Size(size.width, html.VirtualSize.height + 10))
             self.panel_sizer.Add(html)
+        self.Layout()
+        self.SetupScrolling()
+
+    async def auto_update(self) -> None:
+        while self.timeline.next_update is not None:
+            await asyncio.sleep((self.timeline.next_update - datetime.now()).total_seconds())
+            debug(f"Updating {self.timeline.title} timeline")
+            self.update()

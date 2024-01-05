@@ -53,6 +53,4 @@ class MastodonTimeline(Timeline):
 
     def update(self):
         self.statuses = self._method()
-        self.updated = datetime.now()
-        if self.update_period is not None:
-            self.next_update = self.updated + self.update_period
+        super().update()

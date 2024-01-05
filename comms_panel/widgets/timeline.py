@@ -2,6 +2,7 @@ from cProfile import label
 import wx, wx.lib.scrolledpanel, wx.html
 
 from comms_panel.backends.timeline import Timeline
+from comms_panel.lib.html import cleanup_html
 
 
 class TimelinePanel(wx.lib.scrolledpanel.ScrolledPanel):
@@ -34,7 +35,7 @@ class TimelinePanel(wx.lib.scrolledpanel.ScrolledPanel):
             html = wx.html.HtmlWindow(self, style=wx.html.HW_SCROLLBAR_AUTO, size=size)
             orig = status.get("reblog", {})
             if status["content"]:
-                html.SetPage(f"<body>{status["content"]}</body>")
+                html.SetPage(cleanup_html(status["content"]))
             elif not orig:
                 self.panel_sizer.Add(wx.StaticText(self, label="No content"))
 
@@ -42,7 +43,7 @@ class TimelinePanel(wx.lib.scrolledpanel.ScrolledPanel):
                 self.panel_sizer.Add(
                     wx.StaticText(self, label=f"Reblog of {orig["created_at"]} by {orig["account"]["display_name"]}")
                 )
-                html.SetPage(f"<body>{orig["content"]}</body>")
+                html.SetPage(cleanup_html(orig["content"]))
             wx.SafeYield()
             html.SetMinSize(wx.Size(size.width, html.VirtualSize.height + 10))
             self.panel_sizer.Add(html)

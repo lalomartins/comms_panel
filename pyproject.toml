@@ -25,6 +25,7 @@ packages = [
 python = "^3.12"
 wxPython = "^4.1.1"
 mastodon-py = "^1.8.1"
+beautifulsoup4 = "^4.12.2"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"

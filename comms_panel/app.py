@@ -1,13 +1,15 @@
 """Main module."""
 
+from asyncio import get_event_loop
 from datetime import timedelta
 import wx, wx.html
+from wxasync import WxAsyncApp
 
 from comms_panel.backends.mastodon.client import RootClient, UserClient
 from comms_panel.widgets.timeline import TimelinePanel
 
 
-class App(wx.App):
+class App(WxAsyncApp):
     def __init__(self):
         super().__init__(False)
         self.root_client = RootClient()
@@ -33,7 +35,8 @@ class App(wx.App):
 
     def run(self):
         self.frame.Show(True)
-        self.MainLoop()
+        loop = get_event_loop()
+        loop.run_until_complete(self.MainLoop())
 
     def load_posts(self):
         for panel in self.panels:

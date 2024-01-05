@@ -21,6 +21,13 @@ class BaseMastodonClient:
             self, self._client.timeline_local, title=title, update_period=update_period
         )
 
+    def notifications_timeline(
+        self, title: str = "Notifications", update_period=None
+    ) -> Timeline:
+        return MastodonTimeline(
+            self, self._client.notifications, title=title, update_period=update_period
+        )
+
 
 class RootClient(BaseMastodonClient):
     def __init__(self) -> None:
@@ -49,8 +56,8 @@ class MastodonTimeline(Timeline):
         self._method = method
         self.title = title
         self.update_period = update_period
-        self.statuses = []
+        self.items = []
 
     def update(self):
-        self.statuses = self._method()
+        self.items = self._method()
         super().update()

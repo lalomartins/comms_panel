@@ -26,7 +26,7 @@ class TimelinePanel(wx.lib.scrolledpanel.ScrolledPanel):
         width = (self.Size.width or self._default_width) - 20
         self.panel_sizer.Clear(delete_windows=True)
         self.panel_sizer.Add(wx.StaticText(self, label=self.timeline.title))
-        for status in self.timeline.statuses:
+        for status in self.timeline.items:
             self.panel_sizer.AddSpacer(20)
             self.panel_sizer.Add(StatusPanel(self, status, width))
         self.Layout()

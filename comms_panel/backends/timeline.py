@@ -7,7 +7,7 @@ class Timeline:
     updated: datetime
     next_update: datetime | None
     update_period: timedelta | None
-    statuses: list[dict]
+    items: list[dict]
 
     # Override this and add the actual implementation *before* calling super
     def update(self) -> None:

@@ -23,6 +23,7 @@ class StatusPanel(wx.Panel):
 
     def update(self) -> None:
         self.head.SetLabel(f"{self.status["created_at"]} by {self.status["account"]["display_name"]}")
+        self.head.Wrap(self.base_size.width)
         orig = self.status.get("reblog", {})
 
         self.body.Show()

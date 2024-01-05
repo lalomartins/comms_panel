@@ -6,6 +6,7 @@ import wx, wx.html
 from wxasync import WxAsyncApp, StartCoroutine
 
 from comms_panel.backends.mastodon.client import RootClient, UserClient
+from comms_panel.widgets.notification_timeline import NotificationsTimelinePanel
 from comms_panel.widgets.timeline import TimelinePanel
 
 
@@ -16,20 +17,21 @@ class App(WxAsyncApp):
         self.user_client = UserClient()
         self.frame = wx.Frame(None, wx.ID_ANY, "Comms Panel")
         self.SetTopWindow(self.frame)
-        self.frame.MinSize = wx.Size(800, 600)
+        self.frame.MinSize = wx.Size(900, 600)
         self.panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.frame.SetSizer(self.panel_sizer)
         self.frame.SetAutoLayout(1)
         self.panel_sizer.Fit(self.frame)
-        size = wx.Size(380, 600)
+        size = wx.Size(280, 600)
         self.panels = []
         offset = 0
         now = datetime.now()
-        for factory in [
-            self.user_client.home_timeline,
-            self.user_client.local_timeline,
+        for factory, widget in [
+            (self.user_client.home_timeline, TimelinePanel),
+            (self.user_client.local_timeline, TimelinePanel),
+            (self.user_client.notifications_timeline, NotificationsTimelinePanel),
         ]:
-            panel = TimelinePanel(
+            panel = widget(
                 self.frame, factory(update_period=timedelta(minutes=2)), size=size
             )
             panel.timeline.next_update = now + timedelta(seconds=offset)

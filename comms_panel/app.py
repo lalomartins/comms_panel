@@ -1,8 +1,10 @@
 """Main module."""
 
+from datetime import timedelta
 import wx, wx.html
 
 from comms_panel.backends.mastodon.client import RootClient, UserClient
+from comms_panel.widgets.timeline import TimelinePanel
 
 
 class App(wx.App):
@@ -19,8 +21,11 @@ class App(wx.App):
         self.panel_sizer.Fit(self.frame)
         size = wx.Size(400, 600)
         self.panels = [
-            wx.html.HtmlWindow(self.frame, size=size),
-            wx.html.HtmlWindow(self.frame, size=size),
+            TimelinePanel(self.frame, factory(update_period=timedelta(minutes=2)))
+            for factory in [
+                self.user_client.home_timeline,
+                self.user_client.local_timeline,
+            ]
         ]
         self.panel_sizer.AddMany((panel, 1, wx.EXPAND) for panel in self.panels)
 
@@ -28,7 +33,6 @@ class App(wx.App):
         self.frame.Show(True)
         self.MainLoop()
 
-    def load_posts(self, ids: list):
-        for i, id in enumerate(ids):
-            status = self.user_client.get_status(id)
-            self.panels[i].SetPage(status["content"])
+    def load_posts(self):
+        for panel in self.panels:
+            panel.update()
